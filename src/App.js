@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import Nav from "./components/Nav";
 import IDCard from "./components/IDCard";
 import SignUp from "./components/SignUp";
@@ -6,10 +8,18 @@ import SignUp from "./components/SignUp";
 //201 SIGNED UP GOODLY
 
 const App = () => {
+    const [token, setToken] = useState(null)
+
+    function handleUpdateToken(user_token) {
+        setToken(user_token);
+    }
+
     return (
         <>
             <Nav />
-            <SignUp />
+            <SignUp token={null} updateToken={() => setToken()}>
+                {token}
+            </SignUp>
         </>
     );
 };

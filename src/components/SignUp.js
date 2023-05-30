@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-function SignUp() {
+function SignUp({token, updateToken, children}) {
     const [data, setData] = useState({
         username: "",
         faction: ""
     });
-    
+
     const handleChange = (e) => {
         const value = e.target.value;
         setData({
@@ -23,7 +23,9 @@ function SignUp() {
         };
         axios.post("https://api.spacetraders.io/v2/register", userData).then((response) => {
             console.log(response.status, response.data.token, response.data);
+            updateToken(response.data.token);
         });
+
     };
 
     return (
@@ -51,6 +53,7 @@ function SignUp() {
                     </label>
                     <button className="btn btn-light ms-4" type="submit">Login</button>
                 </form>
+                {children}
             </div>
         </div>
     )
