@@ -59,4 +59,4 @@ function SignUp({token, updateToken, children}) {
     )
 }
 
-export default SignUp;
+export default SignUp; 
