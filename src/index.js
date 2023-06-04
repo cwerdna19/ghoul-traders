@@ -3,12 +3,7 @@ import ReactDOM from 'react-dom/client';
 
 import 'bootstrap/dist/css/bootstrap.css'
 
-import {
-  createBrowserRouter,
-  RouterProvider,
-} from "react-router-dom";
-
-import App from './App';
+import { RouterProvider } from "react-router-dom";
 
 import routes from './router';
 

@@ -1,7 +1,4 @@
-import {
-    createBrowserRouter,
-    RouterProvider,
-  } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 
 import Layout from './components/Layout.js'
 import SignUp from './components/SignUp.js'
