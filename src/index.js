@@ -1,13 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-
-import 'bootstrap/dist/css/bootstrap.css'
-
 import { RouterProvider } from "react-router-dom";
 
 import routes from './router';
 
 import './index.css'
+import 'bootstrap/dist/css/bootstrap.css'
 
 const router = routes;
 

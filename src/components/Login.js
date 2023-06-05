@@ -1,18 +1,46 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+import { redirect, useOutletContext } from "react-router-dom";
+
+import { useToken } from "../hooks/useToken";
+
+import axios from "axios";
 
 function Login() {
-
-    // define our state for managing the token that we're going to get from our user in our form
-    // userToken is the actual token
-    // we can only set userToken with the func setUserToken
-    const [userToken, setUserToken] = useState("")
+    const [userToken, setUserToken] = useOutletContext();
+    const [isTokenValid, setIsTokenValid] = useState("");  
 
     function handleSubmit(event) {
         event.preventDefault();
         localStorage.setItem("token", userToken)
     }
 
-    return(
+    function loader(isTokenValid) {
+        if (isTokenValid) {
+            return redirect("/");
+        }
+        else {
+            console.log({token: 'invalid token'})
+        }
+    }
+
+    useEffect( () => {
+        if (userToken) {
+            //let res = checkToken();
+            let res = 199;
+            if (res < 200) {
+                setIsTokenValid(true);
+            } 
+            else {
+                setIsTokenValid(false);
+            }
+            loader(isTokenValid)
+        }
+    },
+        [userToken, isTokenValid]
+    );
+
+    return (
         <>
             <div className="text-bg-dark p-5 m-5 rounded" id="content" >
                 <div className="agent-line-one clearfix">
@@ -22,10 +50,11 @@ function Login() {
                             Token
                             <input
                                 name="token"
-                                value={userToken}
+                                value={setUserToken(useToken())}
                                 onChange={(event) => {
-                                    setUserToken(event.target.value)
-                                }}
+                                        setUserToken(event.target.value)
+                                    }
+                                }
                                 className="ms-2"
                             />
                         </label>
@@ -35,6 +64,42 @@ function Login() {
             </div>
         </>
     )
+}
+
+function checkToken(token) {
+    const data = {
+        Authorization: 'Bearer ' + {token}
+    };
+
+    let res;
+
+    axios.get('https://api.spacetraders.io/v2/my/agent', data)
+    .then(function (response) {
+        res = response;
+    })
+    .catch(function (error) {
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.log(error.response.data);
+        console.log(error.response.status);
+        console.log(error.response.headers);
+
+        res = error.response.headers;
+      } else if (error.request) {
+        // The request was made but no response was received
+        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+        // http.ClientRequest in node.js
+        console.log(error.request);
+        
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.log('Error', error.message);
+      }
+      console.log(error.config);
+    });
+
+    return res
 }
 
 export default Login;

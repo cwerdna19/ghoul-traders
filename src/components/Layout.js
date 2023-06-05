@@ -1,6 +1,10 @@
+import { useState } from "react";
+
 import { Outlet } from "react-router-dom";
 
 import Nav from "./Nav";
+
+import { useToken } from "../hooks/useToken";
 
 // Contexts will allow the site to know that we have defined a token, and thus the Nav should no longer display the login component
 // Contexts will allow all of our components within this "Context" to get the state of our user token
@@ -15,14 +19,23 @@ import Nav from "./Nav";
 // Can reference the website javascript.info
 
 function Layout() {
-    const title = "Ghoul Traders"
+    // define our state for managing the token that we're going to get from our user in our form
+    // userToken is the actual token
+    // we can only set userToken with the func setUserToken
+    const [userToken, setUserToken] = useState("")
 
     return (
         <>
             <Nav />
-            <Outlet />
+            
+            {/* Use react-router outlet context to pass state*/}
+            <Outlet context={[userToken, setUserToken]} />
         </>
     )
+}
+
+export function loader() {
+    const token = ""
 }
 
 export default Layout;

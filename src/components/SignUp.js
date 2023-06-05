@@ -25,7 +25,6 @@ function SignUp({token, updateToken, children}) {
             console.log(response.status, response.data.token, response.data);
             updateToken(response.data.token);
         });
-
     };
 
     return (
