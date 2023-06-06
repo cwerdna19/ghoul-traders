@@ -23,9 +23,10 @@ function Layout() {
     // userToken is the actual token
     // we can only set userToken with the func setUserToken
     
-    const [userToken, setUserToken] = useToken("");
+    const [userToken, setUserToken] = useToken();
 
-    console.log(userToken)
+    console.log(userToken);
+
     return (
         <>
             <Nav />
