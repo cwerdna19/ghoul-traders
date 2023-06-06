@@ -1,20 +1,21 @@
 import { useEffect, useState } from "react";
-
 import { useNavigate, useOutletContext } from "react-router-dom";
-
-import { useToken } from "../hooks/useToken";
-
 import axios from "axios";
 
+import { useDebounce } from "../hooks/useDebounce";
+
 function Login() {
-    const [userToken, setUserToken] = useOutletContext();
+    const [localStorageUserToken, setLocalStorageUserToken, isLoggedIn, setIsLoggedIn] = useOutletContext();
+    const [userToken, setUserToken] = useState();
     const [isTokenValid, setIsTokenValid] = useState(false);
+    const debouncedLocalStorageUserToken = useDebounce(localStorageUserToken, 500);
 
     const navigate = useNavigate();
 
     function handleSubmit(event) {
         event.preventDefault();
-        localStorage.setItem("token", userToken)
+        setLocalStorageUserToken(userToken);
+        localStorage.setItem("token", userToken);
     }
 
     useEffect(() => {
@@ -27,8 +28,8 @@ function Login() {
     
                 if (response.status === 200) {
                     setIsTokenValid(true);
+                    setIsLoggedIn(true);
                 }
-
             } catch (error) {
                 setIsTokenValid(false);
                 if (error.response) {
@@ -39,10 +40,10 @@ function Login() {
             }
         };
     
-        if (userToken) {
-          checkToken(userToken);
+        if (debouncedLocalStorageUserToken) {
+          checkToken(debouncedLocalStorageUserToken);
         }
-    }, [userToken]);
+    }, [debouncedLocalStorageUserToken, localStorageUserToken]);
     
     useEffect(() => {
         if (isTokenValid) {

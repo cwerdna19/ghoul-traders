@@ -30,7 +30,7 @@ function SignUp({token, updateToken, children}) {
     return (
         <div className="text-bg-dark p-5 m-5 rounded" id="content" >
             <div className="agent-line-one clearfix">
-                <h1>Login</h1>
+                <h1>Sign Up</h1>
                 <form onSubmit={handleSubmit}>
                     <label htmlFor="username">
                         Username

@@ -6,6 +6,7 @@ import routes from './router';
 
 import './index.css'
 import 'bootstrap/dist/css/bootstrap.css'
+import 'react-toastify/dist/ReactToastify.css';
 
 const router = routes;
 

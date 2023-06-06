@@ -1,10 +1,14 @@
-import { useState } from "react";
-
+import { useState, useEffect } from "react";
 import { Outlet } from "react-router-dom";
+import { ToastContainer, toast } from 'react-toastify';
+
+//import 'react-toastify/dist/ReactToastify.css';
 
 import Nav from "./Nav";
 
 import { useToken } from "../hooks/useToken";
+
+
 
 // Contexts will allow the site to know that we have defined a token, and thus the Nav should no longer display the login component
 // Contexts will allow all of our components within this "Context" to get the state of our user token
@@ -23,16 +27,23 @@ function Layout() {
     // userToken is the actual token
     // we can only set userToken with the func setUserToken
     
-    const [userToken, setUserToken] = useToken();
+    const [localStorageUserToken, setLocalStorageUserToken] = useToken();
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-    console.log(userToken);
+    const notify = () => toast.success("Nice login, bro!");
+
+    useEffect( () => {
+        if (isLoggedIn) {
+            notify();
+        }
+    }, [isLoggedIn]);
 
     return (
         <>
             <Nav />
-
+            <ToastContainer />
             {/* Use react-router outlet context to pass state*/}
-            <Outlet context={[userToken, setUserToken]} />
+            <Outlet context={[localStorageUserToken, setLocalStorageUserToken, isLoggedIn, setIsLoggedIn]} />
         </>
     )
 }
