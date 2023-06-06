@@ -6,13 +6,12 @@ export function useToken() {
     useEffect( () => {
         const userToken = localStorage.getItem("token");
         setToken(userToken);
+        if (token == null) {
+            setToken("")
+        }
     },
         []
     );
 
-    //const response = isTokenValid(token);
-    //console.log(response)
-    console.log(token)
-
-    return token;
+    return ([token, setToken]);
 }

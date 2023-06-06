@@ -22,20 +22,18 @@ function Layout() {
     // define our state for managing the token that we're going to get from our user in our form
     // userToken is the actual token
     // we can only set userToken with the func setUserToken
-    const [userToken, setUserToken] = useState("")
+    
+    const [userToken, setUserToken] = useToken("");
 
+    console.log(userToken)
     return (
         <>
             <Nav />
-            
+
             {/* Use react-router outlet context to pass state*/}
             <Outlet context={[userToken, setUserToken]} />
         </>
     )
-}
-
-export function loader() {
-    const token = ""
 }
 
 export default Layout;

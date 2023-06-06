@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { redirect, useOutletContext } from "react-router-dom";
+import { redirect, useNavigate, useOutletContext } from "react-router-dom";
 
 import { useToken } from "../hooks/useToken";
 
@@ -8,33 +8,29 @@ import axios from "axios";
 
 function Login() {
     const [userToken, setUserToken] = useOutletContext();
-    const [isTokenValid, setIsTokenValid] = useState("");  
+    const [isTokenValid, setIsTokenValid] = useState("");
+
+    const token = useToken();
+
+    const navigate = useNavigate();
 
     function handleSubmit(event) {
         event.preventDefault();
         localStorage.setItem("token", userToken)
     }
 
-    function loader(isTokenValid) {
-        if (isTokenValid) {
-            return redirect("/");
-        }
-        else {
-            console.log({token: 'invalid token'})
-        }
-    }
-
     useEffect( () => {
-        if (userToken) {
+        console.log(token)
+        if (token) {
             //let res = checkToken();
             let res = 199;
             if (res < 200) {
                 setIsTokenValid(true);
+                navigate("/");
             } 
             else {
                 setIsTokenValid(false);
             }
-            loader(isTokenValid)
         }
     },
         [userToken, isTokenValid]
@@ -50,7 +46,7 @@ function Login() {
                             Token
                             <input
                                 name="token"
-                                value={setUserToken(useToken())}
+                                value={userToken}
                                 onChange={(event) => {
                                         setUserToken(event.target.value)
                                     }
