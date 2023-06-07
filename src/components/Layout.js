@@ -38,9 +38,11 @@ function Layout() {
         }
     }, [isLoggedIn]);
 
+
+
     return (
         <>
-            <Nav />
+            <Nav context={isLoggedIn} />
             <ToastContainer />
             {/* Use react-router outlet context to pass state*/}
             <Outlet context={[localStorageUserToken, setLocalStorageUserToken, isLoggedIn, setIsLoggedIn]} />
