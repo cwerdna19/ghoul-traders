@@ -14,26 +14,26 @@ import axios from "axios";
 // Wow what if I want to parameterize some of the endpoint properties but still have a sub property???
 // like spacetraders.ep1[someVar1].ep2[someVar2]
 
-export function useRateLimit(url, token, setter) {
+export function rateLimitCall(url, token, setter) {
 
-    const requestCount = useRef(0);
-    const lastRequestTime = useRef(Date.now());
+    let requestCount = 0//useRef(0);
+    let lastRequestTime = Date.now();
 
     const rateLimit = async (url, token, setter) => {
 
-        // 
+        // our rate limiter logic
         const now = Date.now();
 
-        if (now - lastRequestTime.current < 1000) {
-            if (requestCount.current >= 2) {
-                setTimeout(rateLimit, 1000 - (now - lastRequestTime.current));
+        if (now - lastRequestTime < 1000) {
+            if (requestCount >= 2) {
+                setTimeout(rateLimit, 1000 - (now - lastRequestTime));
                 return;
             }
         } else {
-            requestCount.current = 0;
+            requestCount = 0;
         }
-        requestCount.current++;
-        lastRequestTime.current = now;
+        requestCount++;
+        lastRequestTime = now;
         
         // actual endpoint request
         try {

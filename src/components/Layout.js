@@ -8,8 +8,6 @@ import Nav from "./Nav";
 
 import { useToken } from "../hooks/useToken";
 
-
-
 // Contexts will allow the site to know that we have defined a token, and thus the Nav should no longer display the login component
 // Contexts will allow all of our components within this "Context" to get the state of our user token
 // Can be done with the Hook useContext()
@@ -23,10 +21,6 @@ import { useToken } from "../hooks/useToken";
 // Can reference the website javascript.info
 
 function Layout() {
-    // define our state for managing the token that we're going to get from our user in our form
-    // userToken is the actual token
-    // we can only set userToken with the func setUserToken
-    
     const [localStorageUserToken, setLocalStorageUserToken] = useToken();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -37,8 +31,6 @@ function Layout() {
             notify();
         }
     }, [isLoggedIn]);
-
-
 
     return (
         <>
