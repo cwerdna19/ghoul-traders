@@ -8,6 +8,8 @@ import Nav from "./Nav";
 
 import { useToken } from "../hooks/useToken";
 
+import { RateLimitProvider } from "../api/useRateLimit";
+
 // Contexts will allow the site to know that we have defined a token, and thus the Nav should no longer display the login component
 // Contexts will allow all of our components within this "Context" to get the state of our user token
 // Can be done with the Hook useContext()
@@ -34,10 +36,12 @@ function Layout() {
 
     return (
         <>
-            <Nav context={isLoggedIn} />
-            <ToastContainer />
-            {/* Use react-router outlet context to pass state*/}
-            <Outlet context={[localStorageUserToken, setLocalStorageUserToken, isLoggedIn, setIsLoggedIn]} />
+            <RateLimitProvider>
+                <Nav context={isLoggedIn} />
+                <ToastContainer />
+                {/* Use react-router outlet context to pass state*/}
+                <Outlet context={[localStorageUserToken, setLocalStorageUserToken, isLoggedIn, setIsLoggedIn]} />
+            </RateLimitProvider>
         </>
     )
 }

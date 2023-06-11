@@ -4,6 +4,8 @@ import { useOutletContext } from "react-router";
 import axios from "axios";
 
 import { rateLimitCall } from "../../api/rateLimitCall";
+import { useRateLimit } from "../../api/useRateLimit";
+import { getAgent, getServerStatus, getUserShips } from "../../api/endpoints";
 
 // Can probably use useMemo to save shit between reloads?????
 
@@ -18,11 +20,16 @@ function Agent() {
 
     //let lastRequestTime = useRef(Date.now());
 
+    const rateLimitedGetAgent = useRateLimit(getAgent, setAgent, console.log);
+    const rateLimitedGetServerStatus = useRateLimit(getServerStatus, setServerStatus, console.log);
+    const rateLimitedGetUserShips = useRateLimit(getUserShips, setUserShips, console.log);
+
     useEffect( () => {
         if (localStorageUserToken) {
-            rateLimitCall('https://api.spacetraders.io/v2/my/agent', localStorageUserToken, setAgent);
-            rateLimitCall('https://api.spacetraders.io/v2', localStorageUserToken, setServerStatus);
-            rateLimitCall('https://api.spacetraders.io/v2/my/ships', localStorageUserToken, setUserShips);
+
+            rateLimitedGetAgent(localStorageUserToken);
+            rateLimitedGetServerStatus(localStorageUserToken);
+            rateLimitedGetUserShips(localStorageUserToken);
         }
 
     }, [localStorageUserToken]);
