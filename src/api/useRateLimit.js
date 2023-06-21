@@ -13,7 +13,7 @@ export const RateLimitProvider = ({children}) => {
             if (thisFunc) {                
                 thisFunc();
             }
-        }, 500)
+        }, 1000)
     }, [])
 
     return <RateLimitContext.Provider value={queue.current}>

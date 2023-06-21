@@ -12,8 +12,6 @@ import axios from "axios";
 // Wow what if I want to parameterize some of the endpoint properties but still have a sub property???
 // like spacetraders.ep1[someVar1].ep2[someVar2]
 
-
-
 export function rateLimitCall(url, token, setter) {
 
     let requestCount = 0//useRef(0);

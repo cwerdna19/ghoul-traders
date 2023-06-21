@@ -9,7 +9,7 @@ async function getEndpoint(url, token) {
         );
 
         if (response.status === 200) {
-            console.log(response.data.data);
+            console.log(response.data);
         }
     } catch (error) {
         if (error.response) {
@@ -34,7 +34,7 @@ export async function getServerStatus(token) {
         );
 
         if (response.status === 200) {
-            console.log(response);
+            console.log(response.data);
         }
     } catch (error) {
         if (error.response) {
@@ -44,7 +44,7 @@ export async function getServerStatus(token) {
         }
     }
 
-    return (response ? response : error.response )
+    return (response ? response.data : error.response.data )
 }
 
 export function getAgent(token) {
@@ -75,5 +75,23 @@ export function getAgent(token) {
 export async function getUserShips(token) {
     const url = "https://api.spacetraders.io/v2/my/ships";
 
-    return getEndpoint(url, token);
+    let response, error;
+    try {
+        response = await axios.get(
+            url,
+            { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        if (response.status === 200) {
+            console.log(response.data);
+        }
+    } catch (error) {
+        if (error.response) {
+            console.log(error.response.data);
+        } else {
+            console.log('Error', error.message);
+        }
+    }
+
+    return (response ? response.data : error.response.data )
 }
