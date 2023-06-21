@@ -4,6 +4,8 @@ import { useOutletContext } from "react-router";
 import { useRateLimit } from "../../api/useRateLimit";
 import { getAgent } from "../../api/endpoints";
 
+import Loader from "../Loader";
+
 // Can probably use useMemo to save shit between reloads?????
 
 function AgentComponent() {
@@ -53,7 +55,7 @@ function AgentComponent() {
                 </div>
                
             </div>
-        ) : <p className="">Loading...</p> }
+        ) : <Loader/> }
         </>
     )
 }

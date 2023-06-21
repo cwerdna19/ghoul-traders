@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useOutletContext } from "react-router"
 import { getUserShips } from "../../api/endpoints";
 import { useRateLimit } from "../../api/useRateLimit";
+import Loader from "../Loader";
 
 function Ship() {
     const [userShips, setUserShips] = useState();
@@ -53,7 +54,7 @@ function Ship() {
                                                     </h2>
                                                     <div className="accordion-collapse collapse" data-bs-parent={`#${ship.symbol}-registration-accordion`} id={`${ship.symbol}-registration-collapse`}>
                                                         <div className="accordion-body">
-                                                            <table class="table">
+                                                            <table className="table">
                                                                 <thead>
                                                                     <tr>
                                                                         <th scope="col">Name</th>
@@ -85,7 +86,7 @@ function Ship() {
                                                     </h2>
                                                     <div className="accordion-collapse collapse" data-bs-parent={`#${ship.symbol}-nav-accordion`} id={`${ship.symbol}-nav-collapse`}>
                                                         <div className="accordion-body">
-                                                            <table class="table">
+                                                            <table className="table">
                                                                 <thead>
                                                                     <tr>
                                                                         <th scope="col">Status</th>
@@ -105,7 +106,7 @@ function Ship() {
                                                             
                                                             <h5>{ship.nav.status == "DOCKED" ? "Last route" : "Current route"}</h5>
                                                             <h6>Destination</h6>
-                                                            <table class="table">
+                                                            <table className="table">
                                                                 <thead>
                                                                     <tr>
                                                                         <th scope="col">Waypoint</th>
@@ -125,7 +126,7 @@ function Ship() {
                                                             </table>
 
                                                             <h6>Departure</h6>
-                                                            <table class="table">
+                                                            <table className="table">
                                                                 <thead>
                                                                     <tr>
                                                                         <th scope="col">Waypoint</th>
@@ -149,6 +150,159 @@ function Ship() {
                                             </div>
                                             {/* END SHIP NAV ACCORDION */}
 
+                                            {/* SHIP CREW ACCORDION */}
+                                            <div className="accordion" id={`${ship.symbol}-crew-accordion`}>
+                                                <div className="accordion-item">
+                                                    <h2 className="accordion-header">
+                                                        <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target={`#${ship.symbol}-crew-collapse`}>
+                                                            Crew
+                                                        </button>
+                                                    </h2>
+                                                    <div className="accordion-collapse collapse" data-bs-parent={`#${ship.symbol}-crew-accordion`} id={`${ship.symbol}-crew-collapse`}>
+                                                        <div className="accordion-body">
+                                                            <table className="table">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th scope="col">Current</th>
+                                                                        <th scope="col">Required</th>
+                                                                        <th scope="col">Capacity</th>
+                                                                        <th scope="col">Rotation</th>
+                                                                        <th scope="col">Morale</th>
+                                                                        <th scope="col">Wages</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td>{ship.crew.current}</td>
+                                                                        <td>{ship.crew.required}</td>
+                                                                        <td>{ship.crew.capacity}</td>
+                                                                        <td>{ship.crew.rotation}</td>
+                                                                        <td>{ship.crew.morale}</td>
+                                                                        <td>{ship.crew.wages}</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>                                                    
+                                                </div>
+                                            </div>
+                                            {/* END SHIP CREW ACCORDION */}
+
+                                            {/* SHIP FRAME ACCORDION */}
+                                            <div className="accordion" id={`${ship.symbol}-frame-accordion`}>
+                                                <div className="accordion-item">
+                                                    <h2 className="accordion-header">
+                                                        <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target={`#${ship.symbol}-frame-collapse`}>
+                                                            Frame
+                                                        </button>
+                                                    </h2>
+                                                    <div className="accordion-collapse collapse" data-bs-parent={`#${ship.symbol}-frame-accordion`} id={`${ship.symbol}-frame-collapse`}>
+                                                        <div className="accordion-body">
+                                                            <div className="table-responsive">
+                                                                <table className="table">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th scope="col">Name</th>
+                                                                            <th scope="col">Symbol</th>
+                                                                            <th scope="col">Condition</th>
+                                                                            <th scope="col">Module Slots</th>
+                                                                            <th scope="col">Mounting Points</th>
+                                                                            <th scope="col">Fuel Capacity</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <td>{ship.frame.name}</td>
+                                                                            <td>{ship.frame.symbol}</td>
+                                                                            <td>{ship.frame.condition}</td>
+                                                                            <td>{ship.frame.moduleSlots}</td>
+                                                                            <td>{ship.frame.mountingPoints}</td>
+                                                                            <td>{ship.frame.fuelCapacity}</td>
+                                                                            
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <th colSpan="100" scope="col">Description</th>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td colSpan="5">{ship.frame.description}</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <th scope="col">Requirements</th>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <th scope="col">Power</th>
+                                                                            <th scope="col">Crew</th>
+                                                                            <th scope="col">Slots</th>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td>{ship.frame.requirements.power}</td>
+                                                                            <td>{ship.frame.requirements.crew}</td>
+                                                                            <td>{ship.frame.requirements.slots}</td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+ 
+                                                            
+                                                        </div>
+                                                    </div>                                                    
+                                                </div>
+                                            </div>
+                                            {/* END SHIP FRAME ACCORDION */}
+
+                                            {/* SHIP REACTOR ACCORDION */}
+                                            <div className="accordion" id={`${ship.symbol}-reactor-accordion`}>
+                                                <div className="accordion-item">
+                                                    <h2 className="accordion-header">
+                                                        <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target={`#${ship.symbol}-reactor-collapse`}>
+                                                            Reactor
+                                                        </button>
+                                                    </h2>
+                                                    <div className="accordion-collapse collapse" data-bs-parent={`#${ship.symbol}-reactor-accordion`} id={`${ship.symbol}-reactor-collapse`}>
+                                                        <div className="accordion-body">
+                                                            <table className="table">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th scope="col">Name</th>
+                                                                        <th scope="col">Symbol</th>
+                                                                        <th scope="col">Condition</th>
+                                                                        <th scope="col">Power Output</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td>{ship.reactor.name}</td>
+                                                                        <td>{ship.reactor.symbol}</td>
+                                                                        <td>{ship.reactor.condition}</td>
+                                                                        <td>{ship.reactor.powerOutput}</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <th scope="col">Description</th>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td colSpan="4">{ship.reactor.description}</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <th scope="col">Requirements</th>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <th scope="col">Power</th>
+                                                                        <th scope="col">Crew</th>
+                                                                        <th scope="col">Slots</th>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>{ship.reactor.requirements.power}</td>
+                                                                        <td>{ship.reactor.requirements.crew}</td>
+                                                                        <td>{ship.reactor.requirements.slots}</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>                                                    
+                                                </div>
+                                            </div>
+                                            {/* END SHIP REACTOR ACCORDION */}
+
                                         </div>
                                     </div>
                                 </div>
@@ -156,7 +310,7 @@ function Ship() {
                         )
                     })}
                 </div>
-            ) : <p className="">Loading...</p> }
+            ) : <Loader/> }
         </>
     )
 }
