@@ -78,7 +78,7 @@ function Ship() {
                                         </tbody>
                                     </table>
                                     
-                                    <h5>{ship.nav.status == "DOCKED" ? "Last route" : "Current route"}</h5>
+                                    <h5>{ship.nav.status === "DOCKED" ? "Last route" : "Current route"}</h5>
                                     <h6>Destination</h6>
                                     <table className="table">
                                         <thead>
@@ -239,10 +239,96 @@ function Ship() {
                                 </Accordion>
                                 {/* END SHIP REACTOR ACCORDION */}
 
-                                {/* SHIP  */}
-                                <Accordion>
-                                    
+                                {/* SHIP ENGINE ACCORDION */}
+                                <Accordion name={ship.symbol} header="engine">
+                                    <table className="table">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Name</th>
+                                                <th scope="col">Symbol</th>
+                                                <th scope="col">Condition</th>
+                                                <th scope="col">Speed</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>{ship.engine.name}</td>
+                                                <td>{ship.engine.symbol}</td>
+                                                <td>{ship.engine.condition}</td>
+                                                <td>{ship.engine.speed}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="col">Description</th>
+                                            </tr>
+                                            <tr>
+                                                <td colSpan="4">{ship.engine.description}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="col">Requirements</th>
+                                            </tr>
+                                            <tr>
+                                                <th scope="col">Power</th>
+                                                <th scope="col">Crew</th>
+                                                <th scope="col">Slots</th>
+                                            </tr>
+                                            <tr>
+                                                <td>{ship.engine.requirements.power}</td>
+                                                <td>{ship.engine.requirements.crew}</td>
+                                                <td>{ship.engine.requirements.slots}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </Accordion>
+                                {/* END SHIP ENGINE ACCORDION */}
+
+                                {/* SHIP MODULES ACCORDION */}
+                                <Accordion name={ship.symbol} header="modules">
+                                    {ship.modules.map( (module, index) => {
+                                        
+
+                                        return ( 
+                                                <Accordion key={`${ship.symbol}-${module.symbol}-${index}`} symbol={`${module.symbol}-${index}`} header={module.name}>
+                                                    <table className="table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th scope="col">Name</th>
+                                                                <th scope="col">Symbol</th>
+                                                                <th scope="col">Capacity</th>
+                                                                <th scope="col">Range</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td>{module.name}</td>
+                                                                <td>{module.symbol}</td>
+                                                                <td>{module.capacity}</td>
+                                                                <td>{module.range}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="col">Description</th>
+                                                            </tr>
+                                                            <tr>
+                                                                <td colSpan="4">{module.description}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="col">Requirements</th>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="col">Power</th>
+                                                                <th scope="col">Crew</th>
+                                                                <th scope="col">Slots</th>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>{module.requirements.power}</td>
+                                                                <td>{module.requirements.crew}</td>
+                                                                <td>{module.requirements.slots}</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </Accordion>
+                                        )})}
+                                </Accordion>
+                                {/* END SHIP modules ACCORDION */}
 
                             </Accordion>
                         )

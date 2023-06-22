@@ -25,37 +25,37 @@ function AgentComponent() {
 
     return (
         <>
-        {agent ? (
-            <div className="card min-vw-30 min-vh-30">
-                <div className="card-header">
-                    <div className="container">
-                        <div className="row justify-content-between">
-                            <div className="col-6">
-                                <span>
-                                    <p className="h2">{agent.symbol}</p>
-                                    <code>{agent.accountId}</code>
-                                </span>
+            {agent ? (
+                <div className="card min-vw-30 min-vh-30">
+                    <div className="card-header">
+                        <div className="container">
+                            <div className="row justify-content-between">
+                                <div className="col-6">
+                                    <span>
+                                        <p className="h2">{agent.symbol}</p>
+                                        <code>{agent.accountId}</code>
+                                    </span>
+                                </div>
+                                <div className="col-6">    
+                                    <span>
+                                        <p className="h2">C{agent.credits}</p>
+                                    </span>
+                                </div>
+                                
                             </div>
-                            <div className="col-6">    
-                                <span>
-                                    <p className="h2">C{agent.credits}</p>
-                                </span>
-                            </div>
-                            
                         </div>
                     </div>
-                </div>
-                <div className="card-body ">
-                    {/* <div className="card-title">
-                        {agent.symbol}
-                    </div> */}
-                    <div className="card-text">
-                        <span className="h6">HQ: <code>{agent.headquarters}</code></span>
+                    <div className="card-body ">
+                        {/* <div className="card-title">
+                            {agent.symbol}
+                        </div> */}
+                        <div className="card-text">
+                            <span className="h6">HQ: <code>{agent.headquarters}</code></span>
+                        </div>
                     </div>
+                
                 </div>
-               
-            </div>
-        ) : <Loader/> }
+            ) : <Loader/> }
         </>
     )
 }
