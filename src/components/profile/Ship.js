@@ -284,8 +284,6 @@ function Ship() {
                                 {/* SHIP MODULES ACCORDION */}
                                 <Accordion name={ship.symbol} header="modules">
                                     {ship.modules.map( (module, index) => {
-                                        
-
                                         return ( 
                                                 <Accordion key={`${ship.symbol}-${module.symbol}-${index}`} symbol={`${module.symbol}-${index}`} header={module.name}>
                                                     <table className="table">
@@ -328,7 +326,121 @@ function Ship() {
                                                 </Accordion>
                                         )})}
                                 </Accordion>
-                                {/* END SHIP modules ACCORDION */}
+                                {/* END SHIP MODULES ACCORDION */}
+                                
+                                {/* SHIP MOUNTS ACCORDION */}
+                                <Accordion name={ship.symbol} header="mounts">
+                                    {ship.mounts.map( (mount, index) => {
+                                        return ( 
+                                                <Accordion key={`${ship.symbol}-${mount.symbol}-${index}`} symbol={`${mount.symbol}-${index}`} header={mount.name}>
+                                                    <table className="table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th scope="col">Name</th>
+                                                                <th scope="col">Symbol</th>
+                                                                <th scope="col">Strength</th>
+                                                                <th scope="col">Deposits</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td>{mount.name}</td>
+                                                                <td>{mount.symbol}</td>
+                                                                <td>{mount.strength}</td>
+                                                                <td>{mount.deposits}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="col">Description</th>
+                                                            </tr>
+                                                            <tr>
+                                                                <td colSpan="4">{mount.description}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="col">Requirements</th>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="col">Power</th>
+                                                                <th scope="col">Crew</th>
+                                                                <th scope="col">Slots</th>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>{mount.requirements.power}</td>
+                                                                <td>{mount.requirements.crew}</td>
+                                                                <td>{mount.requirements.slots}</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </Accordion>
+                                        )})}
+                                </Accordion>
+                                {/* END SHIP MOUNTS ACCORDION */}
+
+                                {/* SHIP CARGO ACCORDION */}
+                                <Accordion name={ship.symbol} header="cargo">
+                                    <table className="table">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Capacity</th>
+                                                <th scope="col">Units</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>{ship.cargo.capacity}</td>
+                                                <td>{ship.cargo.units}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="col">Inventory</th>
+                                            </tr>
+                                            <tr>
+                                                <td colSpan="4">{ship.cargo.description}</td>
+                                            </tr>
+                                            {ship.cargo.inventory.map( item => {
+                                                <>
+                                                    <tr>
+                                                        <td>{item.name}</td>
+                                                        <td>{item.symbol}</td>
+                                                        <td>{item.units}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>{item.description}</td>
+                                                    </tr>
+                                                </>
+                                            })}
+                                        </tbody>
+                                    </table>
+                                </Accordion>
+                                {/* END SHIP CARGO ACCORDION */}
+
+                                {/* SHIP FUEL ACCORDION */}
+                                <Accordion name={ship.symbol} header="fuel">
+                                    <table className="table">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Current</th>
+                                                <th scope="col">Capacity</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>{ship.fuel.current}</td>
+                                                <td>{ship.fuel.capacity}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="col" colSpan="2">Last Consumed</th>
+                                            </tr>
+                                            <tr>
+                                                <td>Amount</td>
+                                                <td>Timestamp</td>
+                                            </tr>
+                                            <tr>
+                                                <td>{ship.fuel.consumed.amount}</td>
+                                                <td>{ship.fuel.consumed.timestamp}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </Accordion>
+                                {/* END SHIP FUEL ACCORDION */}
 
                             </Accordion>
                         )
