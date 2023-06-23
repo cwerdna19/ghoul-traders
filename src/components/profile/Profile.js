@@ -1,7 +1,7 @@
 import { useOutletContext } from 'react-router-dom';
 import AgentComponent from './AgentComponent';
 import Ship from './Ship';
-import Starmap from './Starmap';
+import Starmap from '../starmap/Starmap';
 
 function Profile() {
     return (
@@ -18,7 +18,9 @@ function Profile() {
 
             </div>
             <div className="row">
-                
+                <div className="col">
+                    <Starmap/>
+                </div>
             </div>
 
             {/* <div className="container text-bg-dark p-2 m-2 rounded" id="profile" >
