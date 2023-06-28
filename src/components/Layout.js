@@ -25,6 +25,7 @@ import { RateLimitProvider } from "../api/useRateLimit";
 function Layout() {
     const [localStorageUserToken, setLocalStorageUserToken] = useToken();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [node, setNode] = useState(null);
 
     const notify = () => toast.success("Nice login, bro!");
 
@@ -40,7 +41,7 @@ function Layout() {
                 <Nav context={isLoggedIn} />
                 <ToastContainer />
                 {/* Use react-router outlet context to pass state*/}
-                <Outlet context={[localStorageUserToken, setLocalStorageUserToken, isLoggedIn, setIsLoggedIn]} />
+                <Outlet context={[localStorageUserToken, setLocalStorageUserToken, isLoggedIn, setIsLoggedIn, node, setNode]} />
             </RateLimitProvider>
         </>
     )
