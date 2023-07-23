@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useLayoutEffect, useCallback } from "react";
 import { useOutletContext } from "react-router";
 import { Stage, Layer, Rect, Circle, Label, Tag, Text } from "react-konva";
 
@@ -6,124 +6,255 @@ import { useRateLimit } from "../../api/useRateLimit.js";
 
 import systems from "../../data/systems.json";
 
-/*
+const ORIGIN = Object.freeze({ x: 0, y: 0 });
+  
+// adjust to device to avoid blur
+const { devicePixelRatio: ratio = 1 } = window;
 
-Have to understand how to use offset and scale to calculate our relative position
+function diffPoints(p1, p2) {
+    return { x: p1.x - p2.x, y: p1.y - p2.y };
+}
+  
+function addPoints(p1, p2) {
+    return { x: p1.x + p2.x, y: p1.y + p2.y };
+}
+  
+function scalePoint(p1, scale) {
+    return { x: p1.x / scale, y: p1.y / scale };
+}
+  
+const ZOOM_SENSITIVITY = 500; // bigger for lower zoom per scroll
+  
+function Starmap(props) {
+    const [localStorageUserToken, setLocalStorageUserToken, isLoggedIn, setIsLoggedIn] = useOutletContext();
 
-*/
+    const systemsDrawnRef = useRef(0);
 
-function Tooltip() {
-    const [localStorageUserToken, setLocalStorageUserToken, isLoggedIn, setIsLoggedIn, node, setNode] = useOutletContext();
+    const canvasRef = useRef(null);
+    const [context, setContext] = useState(null);
+    const [scale, setScale] = useState(1);
+    const [offset, setOffset] = useState(ORIGIN);
+    const [mousePos, setMousePos] = useState(ORIGIN);
+    const [viewportTopLeft, setViewportTopLeft] = useState(ORIGIN);
+    const isResetRef = useRef(false);
+    const lastMousePosRef = useRef(ORIGIN);
+    const lastOffsetRef = useRef(ORIGIN);
+  
+    // update last offset
+    useEffect(() => {
+        lastOffsetRef.current = offset;
+    }, [offset]);
+  
+    // reset
+    const reset = useCallback(
+        (context) => {
+            if (context && !isResetRef.current) {
+                // adjust for device pixel density
+                context.canvas.width = props.canvasWidth * ratio;
+                context.canvas.height = props.canvasHeight * ratio;
+                context.scale(ratio, ratio);
+                setScale(1);
 
-    if (node === null) return null;
+                // reset state and refs
+                setContext(context);
+                setOffset(ORIGIN);
+                setMousePos(ORIGIN);
+                setViewportTopLeft(ORIGIN);
+                lastOffsetRef.current = ORIGIN;
+                lastMousePosRef.current = ORIGIN;
 
+                // this thing is so multiple resets in a row don't clear canvas
+                isResetRef.current = true;
+            }
+        },
+        [props.canvasWidth, props.canvasHeight]
+    );
+  
+    // functions for panning
+    const mouseMove = useCallback(
+        (event) => {
+            if (context) {
+                const lastMousePos = lastMousePosRef.current;
+                const currentMousePos = { x: event.pageX, y: event.pageY }; // use document so can pan off element
+                lastMousePosRef.current = currentMousePos;
+        
+                const mouseDiff = diffPoints(currentMousePos, lastMousePos);
+                setOffset((prevOffset) => addPoints(prevOffset, mouseDiff));
+            }
+        },
+      [context]
+    );
+  
+    const mouseUp = useCallback(() => {
+        document.removeEventListener("mousemove", mouseMove);
+        document.removeEventListener("mouseup", mouseUp);
+    }, [mouseMove]);
+  
+    const startPan = useCallback(
+        (event) => {
+            document.addEventListener("mousemove", mouseMove);
+            document.addEventListener("mouseup", mouseUp);
+            lastMousePosRef.current = { x: event.pageX, y: event.pageY };
+        },
+        [mouseMove, mouseUp]
+    );
+  
+    // setup canvas and set context
+    useLayoutEffect(() => {
+        if (canvasRef.current) {
+            // get new drawing context
+            const renderCtx = canvasRef.current.getContext("2d");
+            canvasRef.current.style.background = "lightgrey";
+    
+            if (renderCtx) {
+                reset(renderCtx);
+            }
+        }
+    }, [reset, props.canvasHeight, props.canvasWidth]);
+  
+    // pan when offset or scale changes
+    useLayoutEffect(() => {
+        if (context && lastOffsetRef.current) {
+            const offsetDiff = scalePoint(
+                diffPoints(offset, lastOffsetRef.current),
+                scale
+            );
+            context.translate(offsetDiff.x, offsetDiff.y);
+            setViewportTopLeft((prevVal) => diffPoints(prevVal, offsetDiff));
+            isResetRef.current = false;
+        }
+    }, [context, offset, scale]);
+  
+    // draw
+    useLayoutEffect(() => {
+        if (context) {
+            const squareSize = 20;
+
+            // clear canvas but maintain transform
+            const storedTransform = context.getTransform();
+            context.canvas.width = context.canvas.width;
+            context.setTransform(storedTransform);
+
+            context.fillRect(
+                props.canvasWidth / 2 - squareSize / 2,
+                props.canvasHeight / 2 - squareSize / 2,
+                squareSize,
+                squareSize
+            );
+            context.arc(viewportTopLeft.x, viewportTopLeft.y, 5, 0, 2 * Math.PI);
+            context.fillStyle = "red";
+            context.fill();
+
+            context.fillStyle = 'blue';
+            for (let coordinate of systems) {
+                let { x, y } = coordinate;
+                //const scaledX = (x + 10000 + offset.x) * scale;
+                //const scaledY = (y + 10000 + offset.y) * scale;
+                context.beginPath();
+                context.arc(x, y, 5, 0, 2 * Math.PI);
+                //context.arc(scaledX, scaledY, 5, 0, 2 * Math.PI);
+                //
+                context.fill();
+            }
+
+
+        }
+    }, [
+        props.canvasWidth,
+        props.canvasHeight,
+        context,
+        scale,
+        offset,
+        viewportTopLeft
+    ]);
+  
+    // add event listener on canvas for mouse position
+    useEffect(() => {
+
+        const canvasElem = canvasRef.current;
+        if (canvasElem === null) {
+            return;    
+        }
+  
+        function handleUpdateMouse(event) {
+            event.preventDefault();
+            if (canvasRef.current) {
+                const viewportMousePos = { x: event.clientX, y: event.clientY };
+                const topLeftCanvasPos = {
+                    x: canvasRef.current.offsetLeft,
+                    y: canvasRef.current.offsetTop
+                };
+                setMousePos(diffPoints(viewportMousePos, topLeftCanvasPos));
+            }
+        }
+  
+        canvasElem.addEventListener("mousemove", handleUpdateMouse);
+        canvasElem.addEventListener("wheel", handleUpdateMouse);
+        
+        return () => {
+            canvasElem.removeEventListener("mousemove", handleUpdateMouse);
+            canvasElem.removeEventListener("wheel", handleUpdateMouse);
+        };
+    }, []);
+  
+    // add event listener on canvas for zoom
+    useEffect(() => {
+        const canvasElem = canvasRef.current;
+        if (canvasElem === null) {
+            return;
+        }
+  
+        // this is tricky. Update the viewport's "origin" such that
+        // the mouse doesn't move during scale - the 'zoom point' of the mouse
+        // before and after zoom is relatively the same position on the viewport
+        function handleWheel(event) {
+            event.preventDefault();
+            if (context) {
+                const zoom = 1 - event.deltaY / ZOOM_SENSITIVITY;
+                const viewportTopLeftDelta = {
+                    x: (mousePos.x / scale) * (1 - 1 / zoom),
+                    y: (mousePos.y / scale) * (1 - 1 / zoom)
+                };
+                const newViewportTopLeft = addPoints(
+                    viewportTopLeft,
+                    viewportTopLeftDelta
+                );
+        
+                context.translate(viewportTopLeft.x, viewportTopLeft.y);
+                context.scale(zoom, zoom);
+                context.translate(-newViewportTopLeft.x, -newViewportTopLeft.y);
+        
+                setViewportTopLeft(newViewportTopLeft);
+                setScale(scale * zoom);
+                isResetRef.current = false;
+            }
+        }
+    
+        canvasElem.addEventListener("wheel", handleWheel);
+        return () => canvasElem.removeEventListener("wheel", handleWheel);
+    }, [context, mousePos.x, mousePos.y, viewportTopLeft, scale]);
+  
     return (
-        <Label x={node.x} y={node.y} opacity={0.75}>
-            <Tag
-                fill={"black"}
-                pointerDirection={"down"}
-                pointerWidth={10 * node.scale}
-                pointerHeight={10 * node.scale}
-                lineJoin={"round"}
-                shadowColor={"black"}
-                shadowBlur={10}
-                shadowOffsetX={10}
-                shadowOffsetY={10}
-                shadowOpacity={0.2}
-            />
-            <Text text={node.text} fill={"white"} fontSize={18} padding={5} />
-        </Label>
+        <div className="m-5">
+            <button onClick={() => context && reset(context)}>Reset</button>
+            <pre>scale: {scale}</pre>
+            <pre>offset: {JSON.stringify(offset)}</pre>
+            <pre>viewportTopLeft: {JSON.stringify(viewportTopLeft)}</pre>
+            <pre>mousepos: {JSON.stringify(mousePos.x)}, {JSON.stringify(mousePos.y)}</pre>
+            <pre>number of systems: {JSON.stringify(systemsDrawnRef.current)}</pre>
+            <canvas
+                onMouseDown={startPan}
+                ref={canvasRef}
+                width={props.canvasWidth * ratio}
+                height={props.canvasHeight * ratio}
+                style={{
+                border: "2px solid #000",
+                width: `${props.canvasWidth}px`,
+                height: `${props.canvasHeight}px`
+                }}
+            ></canvas>
+        </div>
     );
 }
-
-function Starmap() {
-    const [localStorageUserToken, setLocalStorageUserToken, isLoggedIn, setIsLoggedIn, node, setNode] = useOutletContext();
-
-    const [stage, setStage] = useState({
-        scale: .1,
-        x: 0,
-        y: 0
-    });
-
-    const [tooltipText, setTooltipText] = useState({x: 0, y: 0});
-
-    const [systemCircles, setSystemCircles] = useState();
-
-    useEffect( () => {
-        setSystemCircles(systems.map( system => { 
-            //system.x = system.x
-            //system.y = system.y
-            console.log(system.x, system.y)
-            return (
-                <Circle
-                    // key={`${system.x}-${system.y}`}
-                    x={system.x}
-                    y={system.y}
-                    width={10}
-                    height={10}
-                    fill="red"
-                />
-            )}));
-    }, []);
-
-    return (
-        <>
-            <Stage
-                width={window.innerWidth}
-                height={window.innerHeight}
-                onWheel={(e) => {
-                    e.evt.preventDefault();
-                
-                    const scaleBy = .95;
-                    const stage = e.target.getStage();
-                    const oldScale = stage.scaleX();
-                    const mousePointTo = {
-                        x: stage.getPointerPosition().x / oldScale - stage.x() / oldScale,
-                        y: stage.getPointerPosition().y / oldScale - stage.y() / oldScale
-                    };
-                
-                    const newScale = e.evt.deltaY < 0 ? oldScale * scaleBy : oldScale / scaleBy;
-                    
-                    setStage({
-                        scale: newScale,
-                        x: (stage.getPointerPosition().x / newScale - mousePointTo.x) * newScale,
-                        y: (stage.getPointerPosition().y / newScale - mousePointTo.y) * newScale
-                    });
-                }}
-                scaleX={stage.scale}
-                scaleY={stage.scale}
-                x={stage.x}
-                y={stage.y}
-                style={{backgroundColor: "green"}}
-                draggable
-                onMouseMove={(e) => {
-                    var node = e.target;
-                    if (node) {
-                        // update tooltip
-                        var mousePos = node.getStage().getPointerPosition();
-                        const stage = e.target.getStage();
-                        setNode({
-                            x: mousePos.x,
-                            y: mousePos.y,
-                            scale: stage.scaleX(),
-                            text: `${mousePos.x}, ${mousePos.y}`
-                        });
-                        console.log(`${mousePos.x}, ${mousePos.y}`);
-                    }
-
-                }}
-            >
-                <Layer
-                    // offsetX={-15500}
-                    // offsetY={-15500}
-                >
-                    <Tooltip/>
-                    {/* {systemCircles} */}
-                </Layer>
-            </Stage>
-        </>
-    )
-
-}
-
+  
 export default Starmap;

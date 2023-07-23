@@ -5,24 +5,22 @@ import requests
 
 url = "https://api.spacetraders.io/v2/systems"
 
-page_num = 1
+#systems_found = r.json()['meta']["total"]
 
-headers = {"limit": 20, "page": f"{page_num}"}
+total_systems = 12000
+systems_per_page = 20
 
-r = requests.get(url, headers)
-total_systems = r.json()['meta']["total"]
+total_pages = int(total_systems / systems_per_page)
 
 starmap = []
-for page in range(600):
+for page_num in range(1, total_pages +1):
+    print(f"Page: {page_num} of 600")
+    headers = {"limit": 20, "page": f"{page_num}"}
+    time.sleep(1)
+    r = requests.get(url, headers)
 
-    if page_num < 601:
-        print(f"Page: {page_num}")
-        time.sleep(1)
-        r = requests.get(url, headers)
-        page_num += 1
-
-        for system in r.json()["data"]:
-            starmap.append(system)
+    for system in r.json()["data"]:
+        starmap.append(system)
 
 with open("systems.json", "w") as f:
     f.write(json.dumps(starmap, indent=4))
