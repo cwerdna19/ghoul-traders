@@ -1,9 +1,10 @@
 import { createBrowserRouter } from "react-router-dom";
 
-import Layout from './components/Layout.js'
-import SignUp from './components/SignUp.js'
-import Login from './components/Login.js'
-import Profile from "./components/profile/Profile.js";
+import Layout from './components/Layout.js';
+import SignUp from './components/SignUp.js';
+import Login from './components/Login.js';
+import Profile from './components/profile/Profile.js';
+import Starmap from './components/starmap/Starmap.js';
 
 const router = createBrowserRouter([
     {
@@ -21,6 +22,10 @@ const router = createBrowserRouter([
         {
           path: "profile",
           element: <Profile />
+        },
+        {
+          path: "starmap",
+          element: <Starmap canvasHeight={800} canvasWidth={900}/>
         }
       ]
     },
